@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello</title>
+    <style>
+        body {
+            color: #1F2161;
+        }
+        p {
+            text-align: justify;
+        }
+        a {
+            color: #0F773C;
+        }
+        a:hover {
+            color: #CB831E;
+            text-decoration: none;
+        }
+        @keyframes swing {
+            0% {
+                transform: rotate(0deg);
+            }
+            10% {
+                transform: rotate(10deg);
+            }
+            30% {
+                transform: rotate(0deg);
+            }
+            40% {
+                transform: rotate(-10deg);
+            }
+            50% {
+                transform: rotate(0deg);
+            }
+            60% {
+                transform: rotate(5deg);
+            }
+            70% {
+                transform: rotate(0deg);
+            }
+            80% {
+                transform: rotate(-5deg);
+            }
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+        .htmlBody #sidebarWrapper,
+        #sidebarWrapper .sidebar-brand > a,
+        .htmlBody .page-content,
+        #sidebarWrapper .navMenu ul li a,
+        #show-sidebar,
+        .htmlBody.toggled #sidebarWrapper {
+            left: 0px;
+        }
+        @media screen and (min-width: 768px) {
+            .htmlBody.toggled .page-content {
+                padding-left: 300px;
+            }
+        }
+        #show-sidebar {
+            position: fixed;
+            left: 0;
+            top: 1.3rem;
+            border-radius: 0 4px 4px 0px;
+            width: 2.5rem;
+            transition-delay: 0.3s;
+            z-index: 2;
+            background-color: #102A83;
+            color: #FEFDFB;
+            font-size: 1.3em;
+            padding-bottom: 0;
+        }
+        #hamburger {
+            margin-bottom: 0;
+        }
+        .htmlBody.toggled #show-sidebar {
+            left: -40px;
+        }
+        .htmlBody.toggled #close-sidebar {
+            color: #1F2161;
+        }
+        .htmlBody.toggled #close-sidebar:hover {
+            color: #0F773C;
+        }
+        #sidebarWrapper {
+            width: 18.8rem;
+            height: 100%;
+            max-height: 100%;
+            position: fixed;
+            top: 0;
+            left: -300px;
+            z-index: 2;
+            overflow-y: auto;
+            background: #F2F2F2;
+        }
+        #sidebarWrapper ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        #sidebarWrapper .sidebar-brand {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+        }
+        #sidebarWrapper .sidebar-brand > a {
+            text-transform: uppercase;
+            font-weight: bold;
+            flex-grow: 1;
+        }
+        #sidebarWrapper .sidebar-brand #close-sidebar {
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        .navMenu {
+            padding-bottom: 10px;
+        }
+        .navMenu ul li a {
+            padding: 8px 30px 8px 20px;
+        }
+        .sidebar-brand > a, .navMenu ul li a {
+            color: #1F2161;
+        }
+        .navMenu ul li:hover > a,
+        .sidebar-brand > a:hover {
+            color: #0F773C;
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit user</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-form">
+                    <div class="form-group">
+                    <label for="username">Enter username</label>
+                    <input type="text" name="username" id="username" class="form-control"/>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                    <label for="email">Enter email</label>
+                    <input type="text" name="email" id="email" class="form-control"/>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                    <label>Enter age</label>
+                    <input type="number" name="age"  class="form-control"/>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label>Roles</label>
+                        <select multiple class="form-control" name="roles">
+                        </select>
+                    </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Edit</button>
+            </div>
+                    <div style="color: red" class="invisible" id="edit-errors">
+                        Неправильные данные
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog" role="document">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title">Create user</h5>-->
+<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                    <span aria-hidden="true">&times;</span>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <form id="create-form">-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="username">Enter username</label>-->
+<!--                        <input type="text" name="username" class="form-control"/>-->
+<!--                    </div>-->
+<!--                    <br/>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="email">Enter email</label>-->
+<!--                        <input type="text" name="email"  class="form-control"/>-->
+<!--                    </div>-->
+<!--                    <br/>-->
+<!--                    <div class="form-group">-->
+<!--                        <label>Enter age</label>-->
+<!--                        <input type="number" name="age"  class="form-control"/>-->
+<!--                    </div>-->
+<!--                    <br/>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="password">Enter password</label>-->
+<!--                        <input type="password" name="password" id="password" class="form-control"/>-->
+<!--                    </div>-->
+<!--                    <br>-->
+<!--                    <div class="form-group">-->
+<!--                        <label>Roles</label>-->
+<!--                        <select multiple class="form-control" name="create-roles">-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                    <div class="modal-footer">-->
+<!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--                        <button type="submit" class="btn btn-primary">Add new user</button>-->
+<!--                    </div>-->
+<!--                    <div style="color: red" class="invisible" id="create-errors">-->
+<!--                        Неправильные данные-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete user</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="delete-form">
+                        <div class="form-group">
+                            <label for="username">Enter username</label>
+                            <input type="text" name="username" class="form-control" disabled/>
+                        </div>
+                        <br/>
+                        <div class="form-group">
+                            <label for="email">Enter email</label>
+                            <input type="text" name="email"  class="form-control" disabled/>
+                        </div>
+                        <br/>
+                        <div class="form-group">
+                            <label>Enter age</label>
+                            <input type="number" name="age" class="form-control" disabled/>
+                        </div>
+                        <br/>
+                        <div class="form-group">
+                            <label>Roles</label>
+                            <select multiple class="form-control" name="roles" disabled>
+                            </select>
+                        </div>
+                        <br>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn btn-danger">Delete</button>
+                        </div>
+                        <div style="color: red" class="invisible" id="delete-errors">Неправильные данные</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="htmlBody toggled">
+    <nav id="sidebarWrapper">
+        <div class="sidebar-content">
+            <div class="sidebar-brand">
+            </div>
+            <div class="sidebar-header">
+            </div>
+            <div class="navMenu">
+                <ul>
+                    <li>
+                        <h4 class="navHeader mt-4 pl-2">
+                            <a href="/admin">Admin</a>
+                        </h4>
+                        <h4 class="navHeader mt-4 pl-2">
+                            <a href="/users">Users</a>
+                        </h4>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="page-content">
+        <h4>
+            <div class="d-flex justify-content-between">
+                <div>
+            <span id="current-user-email"></span>
+            <span id="current-user-roles"></span>
+                </div>
+                <button class="btn btn-secondary" id="admin-logout">Logout</button>
+            </div>
+        </h4>
+        <main class="container-fluid">
+            <h1>Admin panel</h1>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Users table</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">New User</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <h4>All users</h4>
+                    <button class="btn btn-link" data-toggle="modal" data-target="#createModal">New user</button>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Age</th>
+                            <th scope="col">Roles</th>
+                            <th scope="col">Edit</th>
+                            <th scope="col">Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="d-flex justify-content-center w-100">
+                                            <form id="create-form">
+                                                <div class="form-group">
+                                                <label >Enter username</label>
+                                                <input type="text" name="username"  class="form-control"/>
+                                                </div>
+                                                <br/>
+                                                <div class="form-group">
+                                                <label >Enter email</label>
+                                                <input type="text" name="email" class="form-control"/>
+                                                </div>
+                                                <br/>
+                                                <div class="form-group">
+                                                <label >Enter age</label>
+                                                <input type="number" name="age"  class="form-control"/>
+                                                </div>
+                                                <br/>
+                                                <div class="form-group">
+                                                <label for="password">Enter password</label>
+                                                <input type="password" name="password" id="password" class="form-control"/>
+                                                </div>
+                                                <br>
+                                                <div class="form-group">
+                                                    <label>Example multiple select</label>
+                                                    <select multiple="" class="form-control" name="create-roles">
+                                                    </select>
+                                                </div>
+                                                <br>
+                                                <button type="submit" class="btn btn-success" id="create-btn">Add new user</button>
+                                                <div style="color: red" class="invisible" id="create-errors">Неправильные данные</div>
+                                            </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+    const rolesUrl = 'http://localhost:8080/api/admin/users/roles';
+    const userUrl = 'http://localhost:8080/api/admin/users';
+    const admin = document.querySelector("#admin-logout")
+    const tableBody = document.querySelector('.table tbody');
+    const deleteForm = document.getElementById('delete-form');
+    const editForm = document.getElementById('edit-form');
+    const createForm = document.querySelector('#create-form');
+    function populateRoles(selectElement, roles) {
+        roles.forEach(role => {
+            const option = document.createElement('option');
+            option.value = role.name;
+            option.textContent = role.name;
+            selectElement.appendChild(option);
+        });
+    }
+    function fetchUsers(currentUser) {
+        fetch(userUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentUser.jwtToken}`
+            },
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+            .then(responseData => {
+                addUsersToTable(responseData)
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+    function getFormValues(form) {
+        var formData = {};
+        for (var i = 0; i < form.elements.length; i++) {
+            var element = form.elements[i];
+            if (element.name && element.value) {
+                if (element.type === 'select-multiple') {
+                    formData[element.name] = [];
+                    for (var j = 0; j < element.options.length; j++) {
+                        if (element.options[j].selected) {
+                            formData[element.name].push({name: element.options[j].value});
+                        }
+                    }
+                } else {
+                    var parsedValue = parseInt(element.value);
+                    if (!isNaN(parsedValue)) {
+                        formData[element.name] = parsedValue;
+                    } else {
+                        formData[element.name] = element.value;
+                    }
+                }
+            }
+        }
+        return formData;
+    }
+    function addUsersToTable(userData) {
+        const tableBody = document.querySelector('.table tbody');
+        tableBody.innerHTML = '';
+        userData['data']['users'].forEach(user => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+            <td class="id">${user.id}</td>
+            <td class="username">${user.username}</td>
+            <td class="email">${user.email}</td>
+            <td class="age">${user.age}</td>
+            <td class="roles">${user.roles.map(role => role.name).join(', ')}</td>
+            <td><button class="btn btn-info" data-toggle="modal" data-target="#editModal">Edit</button></td>
+            <td><button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete</button></td>
+        `;
+            tableBody.appendChild(newRow);
+        });
+    }
+
+    if (localStorage.getItem("currentUser") !== null) {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        tableBody.addEventListener('click', function (e) {
+            if (e.target.classList.contains("btn-danger")) {
+                const rowData = {};
+                const row = e.target.closest('tr')
+                const cells = row.querySelectorAll('td');
+                const rolesCell = row.querySelector('.roles');
+                const rolesText = rolesCell.textContent.split(',').map(role => role.trim());
+                rowData['roles'] = rolesText.map(roleName => ({ name: roleName }));
+                cells.forEach(cell => {
+                    const key = cell.classList[0];
+                    if (key !== 'roles' && key !== undefined) {
+                        rowData[key] = cell.textContent;
+                    }
+                });
+                const usernameInput = deleteForm.querySelector('input[name="username"]');
+                const emailInput = deleteForm.querySelector('input[name="email"]');
+                const ageInput = deleteForm.querySelector('input[name="age"]');
+                const rolesSelect = deleteForm.querySelector('select[name="roles"]');
+
+                usernameInput.value = rowData.username;
+                emailInput.value = rowData.email;
+                ageInput.value = rowData.age;
+
+                rowData.roles.forEach(role => {
+                    const option = document.createElement('option');
+                    option.value = role.name;
+                    option.textContent = role.name;
+                    rolesSelect.appendChild(option);
+                });
+                deleteForm.addEventListener('submit', function (e) {
+                    e.preventDefault()
+                    const closeBtn = deleteForm.querySelector("button[data-dismiss='modal']")
+                    fetch(userUrl + `/${rowData.id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${currentUser.jwtToken}`
+                        },
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        closeBtn.click()
+                        fetchUsers(currentUser)
+                    })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                })
+            }
+            if (e.target.classList.contains("btn-info")) {
+                const rowData = {};
+                const row = e.target.closest('tr')
+                const cells = row.querySelectorAll('td');
+                const rolesCell = row.querySelector('.roles');
+                const rolesText = rolesCell.textContent.split(',').map(role => role.trim());
+                rowData['roles'] = rolesText.map(roleName => ({ name: roleName }));
+                cells.forEach(cell => {
+                    const key = cell.classList[0];
+                    if (key !== 'roles' && key !== undefined) {
+                        rowData[key] = cell.textContent;
+                    }
+                });
+                const usernameInput = editForm.querySelector('input[name="username"]');
+                const emailInput = editForm.querySelector('input[name="email"]');
+                const ageInput = editForm.querySelector('input[name="age"]');
+                const rolesSelect = editForm.querySelector('select[name="roles"]');
+
+                usernameInput.value = rowData.username;
+                emailInput.value = rowData.email;
+                ageInput.value = rowData.age;
+
+                rowData.roles.forEach(role => {
+                    const option = document.createElement('option');
+                    option.value = role.name;
+                    option.textContent = role.name;
+                    rolesSelect.appendChild(option);
+                });
+                createForm.addEventListener("submit", function (event) {
+                    event.preventDefault()
+                    console.log("submitted!")
+                    const usersListLink = document.querySelector("a[href='#home']")
+                    fetch(userUrl + "/create", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${currentUser.jwtToken}`
+                        },
+                        body: JSON.stringify(getFormValues(event.target))
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json()
+                        e.target.reset()
+                        fetchUsers(currentUser)
+                        usersListLink.click()
+                    }).then(responseData => {
+                        console.log(responseData)
+                    })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                })
+                editForm.addEventListener('submit', function (e) {
+                    e.preventDefault()
+                    const closeBtn = e.target.querySelector("button[data-dismiss='modal']")
+                    fetch(userUrl + `/${rowData.id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${currentUser.jwtToken}`
+                        },
+                        body: JSON.stringify(getFormValues(e.target))
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        closeBtn.click()
+                        fetchUsers(currentUser)
+                    })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                })
+            }
+        })
+        admin.addEventListener("click", function (e) {
+            localStorage.removeItem("currentUser")
+            window.location.href = "http://localhost:8080/auth/login";
+        })
+        fetch(rolesUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentUser.jwtToken}`
+            },
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+            .then(responseData => {
+                const selectElement = document.querySelector('select[name="create-roles"]');
+                populateRoles(selectElement, responseData['data']['roles']);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+        fetchUsers(currentUser)
+        if (currentUser) {
+            document.getElementById('current-user-email').textContent = currentUser.email;
+            document.getElementById('current-user-roles').textContent = currentUser.roles;
+        }
+    } else {
+        window.location.href = "http://localhost:8080/auth/login";
+    }
+</script>
+</body>
+</html>

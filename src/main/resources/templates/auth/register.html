@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<div class="container h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-md-6">
+            <h1>Please sign in</h1>
+            <form method="POST" action="/auth/register" id="register-form">
+                <div class="form-group">
+                    <label for="username">Enter username:</label>
+                    <input type="text" id="username" name="username" class="form-control">
+                    <div style="color: red" id="username-error" class="invisible">username error</div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Enter email:</label>
+                    <input type="text" id="email" name="email" class="form-control">
+                    <div style="color: red" id="email-error" class="invisible">email error</div>
+                </div>
+                <div class="form-group">
+                    <label for="age">Enter age:</label>
+                    <input type="number" id="age" name="age" class="form-control">
+                    <div style="color: red" id="age-error" class="invisible">age error</div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Enter password:</label>
+                    <input type="password" id="password" name="password" class="form-control">
+                    <div style="color: red" id="password-error" class="invisible">password error</div>
+                </div>
+                <input type="submit" value="Sign up!" class="btn btn-primary">
+                <a href="/auth/login" class="btn btn-primary">Sign in</a>
+                <div style="color: red" class="invisible" id="register-errors">Неправильные данные</div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    const registerUrl = 'http://localhost:8080/api/auth/register';
+    const registerForm = document.querySelector("#register-form")
+
+    registerForm.addEventListener("submit", function (e) {
+        e.preventDefault()
+        errorsArea = registerForm.querySelector("#register-errors")
+        const formData = new FormData(registerForm)
+        const formValues = Object.fromEntries(formData.entries())
+        fetch(registerUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formValues)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('Success:', responseData);
+                errorsArea.classList.remove("visible")
+                errorsArea.classList.add("invisible")
+                window.location.href = "http://localhost:8080/auth/login";
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorsArea.classList.remove("invisible")
+                errorsArea.classList.add("visible")
+            });
+    })
+</script>
+</body>
+</html>
