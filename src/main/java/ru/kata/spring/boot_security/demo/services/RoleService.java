@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.services;
 
+import ru.kata.spring.boot_security.demo.dto.RoleDTO;
 import ru.kata.spring.boot_security.demo.models.Role;
 
 import java.util.List;
@@ -12,4 +13,6 @@ public interface RoleService {
     Optional<Role> findByName(String name);
     void update(int id, Role role);
     void delete(int id);
+    Role convertToRole(RoleDTO roleDTO);
+    RoleDTO convertToRoleDTO(Role role);
 }

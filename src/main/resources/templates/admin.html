@@ -176,55 +176,6 @@
     </div>
 </div>
 
-<!--<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">-->
-<!--    <div class="modal-dialog" role="document">-->
-<!--        <div class="modal-content">-->
-<!--            <div class="modal-header">-->
-<!--                <h5 class="modal-title">Create user</h5>-->
-<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-<!--                    <span aria-hidden="true">&times;</span>-->
-<!--                </button>-->
-<!--            </div>-->
-<!--            <div class="modal-body">-->
-<!--                <form id="create-form">-->
-<!--                    <div class="form-group">-->
-<!--                        <label for="username">Enter username</label>-->
-<!--                        <input type="text" name="username" class="form-control"/>-->
-<!--                    </div>-->
-<!--                    <br/>-->
-<!--                    <div class="form-group">-->
-<!--                        <label for="email">Enter email</label>-->
-<!--                        <input type="text" name="email"  class="form-control"/>-->
-<!--                    </div>-->
-<!--                    <br/>-->
-<!--                    <div class="form-group">-->
-<!--                        <label>Enter age</label>-->
-<!--                        <input type="number" name="age"  class="form-control"/>-->
-<!--                    </div>-->
-<!--                    <br/>-->
-<!--                    <div class="form-group">-->
-<!--                        <label for="password">Enter password</label>-->
-<!--                        <input type="password" name="password" id="password" class="form-control"/>-->
-<!--                    </div>-->
-<!--                    <br>-->
-<!--                    <div class="form-group">-->
-<!--                        <label>Roles</label>-->
-<!--                        <select multiple class="form-control" name="create-roles">-->
-<!--                        </select>-->
-<!--                    </div>-->
-<!--                    <div class="modal-footer">-->
-<!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
-<!--                        <button type="submit" class="btn btn-primary">Add new user</button>-->
-<!--                    </div>-->
-<!--                    <div style="color: red" class="invisible" id="create-errors">-->
-<!--                        Неправильные данные-->
-<!--                    </div>-->
-<!--                </form>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -312,7 +263,7 @@
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                     <h4>All users</h4>
-                    <button class="btn btn-link" data-toggle="modal" data-target="#createModal">New user</button>
+<!--                    <button class="btn btn-link" data-toggle="modal" data-target="#createModal">New user</button>-->
                     <table class="table">
                         <thead>
                         <tr>
@@ -331,36 +282,36 @@
                 </div>
                 <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="d-flex justify-content-center w-100">
-                                            <form id="create-form">
-                                                <div class="form-group">
-                                                <label >Enter username</label>
-                                                <input type="text" name="username"  class="form-control"/>
-                                                </div>
-                                                <br/>
-                                                <div class="form-group">
-                                                <label >Enter email</label>
-                                                <input type="text" name="email" class="form-control"/>
-                                                </div>
-                                                <br/>
-                                                <div class="form-group">
-                                                <label >Enter age</label>
-                                                <input type="number" name="age"  class="form-control"/>
-                                                </div>
-                                                <br/>
-                                                <div class="form-group">
-                                                <label for="password">Enter password</label>
-                                                <input type="password" name="password" id="password" class="form-control"/>
-                                                </div>
-                                                <br>
-                                                <div class="form-group">
-                                                    <label>Example multiple select</label>
-                                                    <select multiple="" class="form-control" name="create-roles">
-                                                    </select>
-                                                </div>
-                                                <br>
-                                                <button type="submit" class="btn btn-success" id="create-btn">Add new user</button>
-                                                <div style="color: red" class="invisible" id="create-errors">Неправильные данные</div>
-                                            </form>
+                        <form id="create-form" action="/api/admin/users/create">
+                            <div class="form-group">
+                            <label >Enter username</label>
+                            <input type="text" name="username"  class="form-control"/>
+                            </div>
+                            <br/>
+                            <div class="form-group">
+                            <label >Enter email</label>
+                            <input type="text" name="email" class="form-control"/>
+                            </div>
+                            <br/>
+                            <div class="form-group">
+                            <label >Enter age</label>
+                            <input type="number" name="age"  class="form-control"/>
+                            </div>
+                            <br/>
+                            <div class="form-group">
+                            <label >Enter password</label>
+                            <input type="password" name="password" class="form-control"/>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label>Example multiple select</label>
+                                <select multiple="" class="form-control" name="create-roles">
+                                </select>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-success" id="create-btn">Add new user</button>
+                            <div style="color: red" class="invisible" id="create-errors">Неправильные данные</div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -378,6 +329,8 @@
     const deleteForm = document.getElementById('delete-form');
     const editForm = document.getElementById('edit-form');
     const createForm = document.querySelector('#create-form');
+    const usersListLink = document.querySelector("a[href='#home']")
+    const userCreateLink = document.querySelector("a[href='#profile']")
     function populateRoles(selectElement, roles) {
         roles.forEach(role => {
             const option = document.createElement('option');
@@ -411,11 +364,11 @@
         for (var i = 0; i < form.elements.length; i++) {
             var element = form.elements[i];
             if (element.name && element.value) {
-                if (element.type === 'select-multiple') {
-                    formData[element.name] = [];
+                if (element.name === 'create-roles') {
+                    formData["roles"] = [];
                     for (var j = 0; j < element.options.length; j++) {
                         if (element.options[j].selected) {
-                            formData[element.name].push({name: element.options[j].value});
+                            formData["roles"].push({name: element.options[j].value});
                         }
                     }
                 } else {
@@ -528,32 +481,7 @@
                     option.textContent = role.name;
                     rolesSelect.appendChild(option);
                 });
-                createForm.addEventListener("submit", function (event) {
-                    event.preventDefault()
-                    console.log("submitted!")
-                    const usersListLink = document.querySelector("a[href='#home']")
-                    fetch(userUrl + "/create", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${currentUser.jwtToken}`
-                        },
-                        body: JSON.stringify(getFormValues(event.target))
-                    }).then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json()
-                        e.target.reset()
-                        fetchUsers(currentUser)
-                        usersListLink.click()
-                    }).then(responseData => {
-                        console.log(responseData)
-                    })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                })
+
                 editForm.addEventListener('submit', function (e) {
                     e.preventDefault()
                     const closeBtn = e.target.querySelector("button[data-dismiss='modal']")
@@ -576,6 +504,29 @@
                         });
                 })
             }
+        })
+        createForm.addEventListener("submit", function (event) {
+            event.preventDefault()
+            fetch(userUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentUser.jwtToken}`
+                },
+                body: JSON.stringify(getFormValues(event.target))
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json()
+            }).then(responseData => {
+                event.target.reset()
+                fetchUsers(currentUser)
+                usersListLink.click()
+            })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         })
         admin.addEventListener("click", function (e) {
             localStorage.removeItem("currentUser")

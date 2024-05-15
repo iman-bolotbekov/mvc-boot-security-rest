@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +25,7 @@ import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl extends UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -66,10 +65,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         user.setEmail(user.getEmail());
         Set<Role> roles = new HashSet<>();
         for (Role role : user.getRoles()) {
-            Role existingRole = roleRepository.findByName(role.getName()).orElse(null);
-            if (existingRole != null) {
-                roles.add(existingRole);
-            }
+            roleRepository.findByName(role.getName()).ifPresent(roles::add);
         }
         user.setRoles(roles);
         userRepository.save(user);
@@ -83,13 +79,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         existingUser.setUsername(updatedUser.getUsername());
         existingUser.setEmail(updatedUser.getEmail());
         existingUser.setAge(updatedUser.getAge());
-
         Set<Role> updatedRoles = new HashSet<>();
         for (Role role : updatedUser.getRoles()) {
-            Role existingRole = roleRepository.findByName(role.getName()).orElse(null);
-            if (existingRole != null) {
-                updatedRoles.add(existingRole);
-            }
+            roleRepository.findByName(role.getName()).ifPresent(updatedRoles::add);
         }
         existingUser.setRoles(updatedRoles);
         userRepository.save(existingUser);

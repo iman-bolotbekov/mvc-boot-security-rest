@@ -6,7 +6,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.kata.spring.boot_security.demo.services.UserDetailsServiceImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.context.annotation.Bean;
@@ -15,17 +14,18 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import ru.kata.spring.boot_security.demo.services.UserService;
 
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final UserService userService;
     private final JWTFilter jwtFilter;
-    public SecurityConfig(UserDetailsServiceImpl userDetailsServiceImpl,
+    public SecurityConfig(UserService userService,
                           JWTFilter jwtFilter) {
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
+        this.userService = userService;
         this.jwtFilter = jwtFilter;
     }
     @Bean
@@ -41,7 +41,7 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(this.jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsServiceImpl)
+                .userDetailsService(userService)
                 .passwordEncoder(passwordEncoder());
         return http.build();
     }
@@ -51,7 +51,7 @@ public class SecurityConfig {
     }
     @Bean
     public AuthenticationManager authenticationManager(
-            UserDetailsServiceImpl userDetailsService,
+            UserService userDetailsService,
             PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService);
