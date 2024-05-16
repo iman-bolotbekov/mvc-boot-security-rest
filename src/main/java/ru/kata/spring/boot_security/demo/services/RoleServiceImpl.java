@@ -6,6 +6,7 @@ import ru.kata.spring.boot_security.demo.dto.RoleDTO;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,8 +19,10 @@ public class RoleServiceImpl implements RoleService {
         this.roleRepository = roleRepository;
         this.modelMapper = modelMapper;
     }
-    public List<Role> findAll() {
-        return roleRepository.findAll();
+    public List<RoleDTO> findAll() {
+        List<RoleDTO> roles = new ArrayList<>();
+        roleRepository.findAll().forEach(role -> roles.add(convertToRoleDTO(role)));
+        return roles;
     }
     public Role findOne(int id) {
         return roleRepository.findById(id).orElse(null);

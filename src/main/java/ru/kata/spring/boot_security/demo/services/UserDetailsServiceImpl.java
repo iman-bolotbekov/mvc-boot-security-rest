@@ -18,10 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -51,11 +48,17 @@ public class UserDetailsServiceImpl extends UserService {
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserDTO> findAll() {
+        List<UserDTO> users = new ArrayList<>();
+        userRepository.findAll().forEach(u -> users.add(convertToUserDTO(u)));
+        return users;
     }
     public Optional<User> findOne(int id) {
         return userRepository.findById(id);
+    }
+    public UserDTO findOne(User user) {
+        Hibernate.initialize(user.getRoles());
+        return convertToUserDTO(user);
     }
     @Transactional
     public void save(User user) {

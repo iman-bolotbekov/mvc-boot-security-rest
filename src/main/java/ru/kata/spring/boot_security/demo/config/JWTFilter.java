@@ -5,7 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import ru.kata.spring.boot_security.demo.security.JWTUtil;
+import ru.kata.spring.boot_security.demo.services.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,11 +20,11 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final UserService userService;
-    private final JWTUtil jwtUtil;
+    private final JWTService jwtService;
     @Autowired
-    public JWTFilter(JWTUtil jwtUtil,
+    public JWTFilter(JWTService jwtService,
                      UserService userService) {
-        this.jwtUtil = jwtUtil;
+        this.jwtService = jwtService;
         this.userService = userService;
     }
     @Override
@@ -36,7 +36,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 response.sendError(response.SC_BAD_REQUEST, "Invalid JWT token Bearer header");
             } else {
                 try {
-                    String username = this.jwtUtil.validateTokenAndRetrieveClaim(jwt);
+                    String username = this.jwtService.validateTokenAndRetrieveClaim(jwt);
                     UserDetails userDetails = this.userService.loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(

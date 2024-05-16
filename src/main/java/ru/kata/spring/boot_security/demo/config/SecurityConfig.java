@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.config;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import ru.kata.spring.boot_security.demo.services.AuthorizationService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 
@@ -23,20 +25,19 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 public class SecurityConfig {
     private final UserService userService;
     private final JWTFilter jwtFilter;
+    private final AuthorizationService authorizationService;
     public SecurityConfig(UserService userService,
-                          JWTFilter jwtFilter) {
+                          JWTFilter jwtFilter,
+                          AuthorizationService authorizationService) {
         this.userService = userService;
         this.jwtFilter = jwtFilter;
+        this.authorizationService = authorizationService;
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests((authorize) -> authorize
-                                .requestMatchers("api/admin").hasRole("ADMIN")
-                                .requestMatchers("api/users").hasRole("USER")
-                                .anyRequest().permitAll()
-                )
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authorizationService.getAuthorities())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(this.jwtFilter, UsernamePasswordAuthenticationFilter.class)

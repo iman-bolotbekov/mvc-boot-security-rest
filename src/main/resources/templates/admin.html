@@ -160,7 +160,7 @@
                     <br/>
                     <div class="form-group">
                         <label>Roles</label>
-                        <select multiple class="form-control" name="roles">
+                        <select multiple class="form-control" name="update-roles">
                         </select>
                     </div>
             <div class="modal-footer">
@@ -330,7 +330,6 @@
     const editForm = document.getElementById('edit-form');
     const createForm = document.querySelector('#create-form');
     const usersListLink = document.querySelector("a[href='#home']")
-    const userCreateLink = document.querySelector("a[href='#profile']")
     function populateRoles(selectElement, roles) {
         roles.forEach(role => {
             const option = document.createElement('option');
@@ -364,7 +363,7 @@
         for (var i = 0; i < form.elements.length; i++) {
             var element = form.elements[i];
             if (element.name && element.value) {
-                if (element.name === 'create-roles') {
+                if (element.name === 'create-roles' || element.name === 'update-roles') {
                     formData["roles"] = [];
                     for (var j = 0; j < element.options.length; j++) {
                         if (element.options[j].selected) {
@@ -401,6 +400,48 @@
         });
     }
 
+    function deleteHandler (e, id, currentUser) {
+        e.preventDefault()
+        const closeBtn = deleteForm.querySelector("button[data-dismiss='modal']")
+        fetch(userUrl + `/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentUser.jwtToken}`
+            },
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            closeBtn.click()
+            fetchUsers(currentUser)
+        })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+    function editHandler(e, id, currentUser) {
+        e.preventDefault()
+        const closeBtn = editForm.querySelector("button[data-dismiss='modal']")
+        fetch(userUrl + `/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentUser.jwtToken}`
+            },
+            body: JSON.stringify(getFormValues(editForm))
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            closeBtn.click()
+            fetchUsers(currentUser)
+        })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
     if (localStorage.getItem("currentUser") !== null) {
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         tableBody.addEventListener('click', function (e) {
@@ -417,11 +458,12 @@
                         rowData[key] = cell.textContent;
                     }
                 });
+
                 const usernameInput = deleteForm.querySelector('input[name="username"]');
                 const emailInput = deleteForm.querySelector('input[name="email"]');
                 const ageInput = deleteForm.querySelector('input[name="age"]');
                 const rolesSelect = deleteForm.querySelector('select[name="roles"]');
-
+                rolesSelect.innerHTML = ""
                 usernameInput.value = rowData.username;
                 emailInput.value = rowData.email;
                 ageInput.value = rowData.age;
@@ -432,25 +474,8 @@
                     option.textContent = role.name;
                     rolesSelect.appendChild(option);
                 });
-                deleteForm.addEventListener('submit', function (e) {
-                    e.preventDefault()
-                    const closeBtn = deleteForm.querySelector("button[data-dismiss='modal']")
-                    fetch(userUrl + `/${rowData.id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${currentUser.jwtToken}`
-                        },
-                    }).then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        closeBtn.click()
-                        fetchUsers(currentUser)
-                    })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
+                deleteForm.addEventListener('submit', (e) => {
+                    deleteHandler(e, rowData.id, currentUser)
                 })
             }
             if (e.target.classList.contains("btn-info")) {
@@ -469,40 +494,20 @@
                 const usernameInput = editForm.querySelector('input[name="username"]');
                 const emailInput = editForm.querySelector('input[name="email"]');
                 const ageInput = editForm.querySelector('input[name="age"]');
-                const rolesSelect = editForm.querySelector('select[name="roles"]');
-
+                const rolesSelect = editForm.querySelector('select[name="update-roles"]');
                 usernameInput.value = rowData.username;
                 emailInput.value = rowData.email;
                 ageInput.value = rowData.age;
 
-                rowData.roles.forEach(role => {
-                    const option = document.createElement('option');
-                    option.value = role.name;
-                    option.textContent = role.name;
-                    rolesSelect.appendChild(option);
+                rolesSelect.querySelectorAll('option').forEach(option => {
+                    const roleExists = rowData.roles.some(role => role.name === option.value);
+                    if (roleExists) {
+                        option.selected = true;
+                    }
                 });
-
-                editForm.addEventListener('submit', function (e) {
-                    e.preventDefault()
-                    const closeBtn = e.target.querySelector("button[data-dismiss='modal']")
-                    fetch(userUrl + `/${rowData.id}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${currentUser.jwtToken}`
-                        },
-                        body: JSON.stringify(getFormValues(e.target))
-                    }).then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        closeBtn.click()
-                        fetchUsers(currentUser)
-                    })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                })
+                editForm.addEventListener('submit', (e) => {
+                    editHandler(e, rowData.id,currentUser);
+                });
             }
         })
         createForm.addEventListener("submit", function (event) {
@@ -545,8 +550,10 @@
             return response.json();
         })
             .then(responseData => {
-                const selectElement = document.querySelector('select[name="create-roles"]');
-                populateRoles(selectElement, responseData['data']['roles']);
+                const selectElement1 = document.querySelector('select[name="create-roles"]');
+                const selectElement2 = document.querySelector('select[name="update-roles"]');
+                populateRoles(selectElement1, responseData['data']['roles']);
+                populateRoles(selectElement2, responseData['data']['roles']);
             })
             .catch(error => {
                 console.error('Error:', error);

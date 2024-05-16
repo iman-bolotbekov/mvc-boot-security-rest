@@ -1,4 +1,4 @@
-package ru.kata.spring.boot_security.demo.security;
+package ru.kata.spring.boot_security.demo.services;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -12,7 +12,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Component
-public class JWTUtil {
+public class JWTServiceImpl implements JWTService {
     @Value("${jwt_secret}")
     private String secret;
     public String generateToken(String username) {

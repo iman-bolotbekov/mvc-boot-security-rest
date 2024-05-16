@@ -11,8 +11,9 @@ import java.util.Optional;
 
 public abstract class UserService implements UserDetailsService {
     public abstract Optional<User> findByUsername(String username);
-    public abstract List<User> findAll();
+    public abstract List<UserDTO> findAll();
     public abstract Optional<User> findOne(int id);
+    public abstract UserDTO findOne(User user);
     public abstract void save(User user);
     public abstract void update(int id, User updatedPerson);
     public abstract void delete(int id);
